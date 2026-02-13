@@ -247,6 +247,22 @@ function isSafeUrl(url) {
   return /^https?:\/\//i.test(url);
 }
 
+function buildPopupHtml(r) {
+  const parts = [
+    `<b>${escapeHtml(r.barnehage)}</b>`,
+    `${escapeHtml(t("bydelLbl"))}: ${escapeHtml(r.bydel)}`,
+    `${escapeHtml(t("liten"))}: ${escapeHtml(r.spot_litenavdeling)}`,
+    `${escapeHtml(t("stor"))}: ${escapeHtml(r.spot_storavdeling)}`,
+    escapeHtml(r.address || "")
+  ];
+  return parts.join("<br>");
+}
+
+function buildLinkHtml(url) {
+  if (!url || !isSafeUrl(url)) return "";
+  return `<a class="link" href="${escapeHtml(url)}" target="_blank" rel="noopener">${t("open")}</a>`;
+}
+
 function renderMap(rows) {
   if (!markerLayer || !window.L) return;
   markerLayer.clearLayers();
@@ -257,7 +273,7 @@ function renderMap(rows) {
     const radius = 5;
     const color = bydelColors[r.bydel] || "#334155";
 
-    const popup = `<b>${escapeHtml(r.barnehage)}</b><br>${escapeHtml(t("bydelLbl"))}: ${escapeHtml(r.bydel)}<br>${escapeHtml(t("liten"))}: ${escapeHtml(r.spot_litenavdeling)}<br>${escapeHtml(t("stor"))}: ${escapeHtml(r.spot_storavdeling)}<br>${escapeHtml(r.address || "")}`;
+    const popup = buildPopupHtml(r);
 
     L.circleMarker([lat, lon], {
       radius, color, fillColor: color, fillOpacity: 0.8, weight: 1
@@ -274,7 +290,7 @@ function renderResults(rows) {
   }
 
   ui.results.innerHTML = rows.slice(0, 700).map(r => {
-    const link = (r.barnehage_url && isSafeUrl(r.barnehage_url)) ? `<a class="link" href="${escapeHtml(r.barnehage_url)}" target="_blank" rel="noopener">${t("open")}</a>` : "";
+    const link = buildLinkHtml(r.barnehage_url);
     return `
       <article class="card">
         <h3>${escapeHtml(r.barnehage)}</h3>
