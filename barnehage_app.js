@@ -250,9 +250,9 @@ function isSafeUrl(url) {
 function buildPopupHtml(r) {
   const parts = [
     `<b>${escapeHtml(r.barnehage)}</b>`,
-    `${escapeHtml(t("bydelLbl"))}: ${escapeHtml(r.bydel)}`,
-    `${escapeHtml(t("liten"))}: ${escapeHtml(r.spot_litenavdeling)}`,
-    `${escapeHtml(t("stor"))}: ${escapeHtml(r.spot_storavdeling)}`,
+    `${t("bydelLbl")}: ${escapeHtml(r.bydel)}`,
+    `${t("liten")}: ${escapeHtml(r.spot_litenavdeling)}`,
+    `${t("stor")}: ${escapeHtml(r.spot_storavdeling)}`,
     escapeHtml(r.address || "")
   ];
   return parts.join("<br>");
@@ -403,5 +403,4 @@ async function init() {
 init().catch((err) => {
   ui.results.innerHTML = `<div class="empty">Data loading error: ${String(err.message || err)}</div>`;
 });
-
 
