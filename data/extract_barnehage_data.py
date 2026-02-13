@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import csv
+import html
 import io
 import json
 import re
@@ -68,6 +69,8 @@ BYDEL_TAG_MAP = {
     "Østensjø": 948,
 }
 
+# NOTE: These are read-only public API keys for Oslo Kommune's public data
+# They are intended for client-side use and are not sensitive credentials
 ALGOLIA_APP_ID = "NJ4QX1MFJ2"
 ALGOLIA_API_KEY = "4ce897d2ad7bca6a9fbcac2888b35801"
 ALGOLIA_INDEX = "prod_oslo_kommune_no"
@@ -345,13 +348,13 @@ def build_map_html(rows):
         bydel = json.dumps(r["bydel"], ensure_ascii=False)
         url = json.dumps(r["barnehage_url"] or "", ensure_ascii=False)
         popup = (
-            f"<b>{r['barnehage']}</b><br>"
-            f"Bydel: {r['bydel']}<br>"
-            f"Liten avdeling: {r['spot_litenavdeling']}<br>"
-            f"Stor avdeling: {r['spot_storavdeling']}<br>"
+            f"<b>{html.escape(r['barnehage'])}</b><br>"
+            f"Bydel: {html.escape(r['bydel'])}<br>"
+            f"Liten avdeling: {html.escape(str(r['spot_litenavdeling']))}<br>"
+            f"Stor avdeling: {html.escape(str(r['spot_storavdeling']))}<br>"
         )
         if r["barnehage_url"]:
-            popup += f"<a href='{r['barnehage_url']}' target='_blank' rel='noopener'>Barnehage-side</a>"
+            popup += f"<a href='{html.escape(r['barnehage_url'])}' target='_blank' rel='noopener'>Barnehage-side</a>"
         popup_js = json.dumps(popup, ensure_ascii=False)
         color = BYDEL_COLORS.get(r["bydel"], "#333333")
         points_js.append(

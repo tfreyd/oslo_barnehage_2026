@@ -3,6 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https: data:; connect-src 'self' https:;" />
   <title>Oslo Barnehage Finder</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -582,6 +583,16 @@
       ui.vStor.textContent = String(sumS);
     }
 
+    function escapeHtml(value) {
+      const str = value == null ? "" : String(value);
+      return str.replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
+    }
+
+    function isSafeUrl(url) {
+      if (!url || typeof url !== 'string') return false;
+      return /^https?:\/\//i.test(url);
+    }
+
     function renderMap(rows) {
       if (!markerLayer || !window.L) return;
       markerLayer.clearLayers();
@@ -592,7 +603,7 @@
         const radius = 5;
         const color = bydelColors[r.bydel] || "#334155";
 
-        const popup = `<b>${r.barnehage}</b><br>${t("bydelLbl")}: ${r.bydel}<br>Liten: ${r.spot_litenavdeling}<br>Stor: ${r.spot_storavdeling}<br>${r.address || ""}`;
+        const popup = `<b>${escapeHtml(r.barnehage)}</b><br>${escapeHtml(t("bydelLbl"))}: ${escapeHtml(r.bydel)}<br>Liten: ${escapeHtml(r.spot_litenavdeling)}<br>Stor: ${escapeHtml(r.spot_storavdeling)}<br>${escapeHtml(r.address || "")}`;
 
         L.circleMarker([lat, lon], {
           radius, color, fillColor: color, fillOpacity: 0.8, weight: 1
@@ -602,11 +613,6 @@
       // Keep Oslo centered by default; no automatic fitBounds.
     }
 
-    function escapeHtml(value) {
-      const str = value == null ? "" : String(value);
-      return str.replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
-    }
-
     function renderResults(rows) {
       if (!rows.length) {
         ui.results.innerHTML = `<div class="empty">${t("noResults")}</div>`;
@@ -614,7 +620,7 @@
       }
 
       ui.results.innerHTML = rows.slice(0, 700).map(r => {
-        const link = r.barnehage_url ? `<a class="link" href="${r.barnehage_url}" target="_blank" rel="noopener">${t("open")}</a>` : "";
+        const link = (r.barnehage_url && isSafeUrl(r.barnehage_url)) ? `<a class="link" href="${escapeHtml(r.barnehage_url)}" target="_blank" rel="noopener">${t("open")}</a>` : "";
         return `
           <article class="card">
             <h3>${escapeHtml(r.barnehage)}</h3>
