@@ -592,7 +592,10 @@
         const radius = 5;
         const color = bydelColors[r.bydel] || "#334155";
 
-        const popup = `<b>${r.barnehage}</b><br>${t("bydelLbl")}: ${r.bydel}<br>Liten: ${r.spot_litenavdeling}<br>Stor: ${r.spot_storavdeling}<br>${r.address || ""}`;
+        const popupLink = r.barnehage_url
+          ? `<br><a class="link" href="${escapeHtml(r.barnehage_url)}" target="_blank" rel="noopener">${t("open")}</a>`
+          : "";
+        const popup = `<b>${escapeHtml(r.barnehage)}</b><br>${t("bydelLbl")}: ${escapeHtml(r.bydel)}<br>Liten: ${escapeHtml(r.spot_litenavdeling)}<br>Stor: ${escapeHtml(r.spot_storavdeling)}<br>${escapeHtml(r.address || "")}${popupLink}`;
 
         L.circleMarker([lat, lon], {
           radius, color, fillColor: color, fillOpacity: 0.8, weight: 1
