@@ -257,7 +257,7 @@ function renderMap(rows) {
     const radius = 5;
     const color = bydelColors[r.bydel] || "#334155";
 
-    const popup = `<b>${escapeHtml(r.barnehage)}</b><br>${escapeHtml(t("bydelLbl"))}: ${escapeHtml(r.bydel)}<br>Liten: ${escapeHtml(r.spot_litenavdeling)}<br>Stor: ${escapeHtml(r.spot_storavdeling)}<br>${escapeHtml(r.address || "")}`;
+    const popup = `<b>${escapeHtml(r.barnehage)}</b><br>${escapeHtml(t("bydelLbl"))}: ${escapeHtml(r.bydel)}<br>${escapeHtml(t("liten"))}: ${escapeHtml(r.spot_litenavdeling)}<br>${escapeHtml(t("stor"))}: ${escapeHtml(r.spot_storavdeling)}<br>${escapeHtml(r.address || "")}`;
 
     L.circleMarker([lat, lon], {
       radius, color, fillColor: color, fillOpacity: 0.8, weight: 1

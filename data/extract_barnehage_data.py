@@ -330,10 +330,10 @@ def fetch_page_data(url: str):
 
 
 def is_safe_url(url):
-    """Check if URL uses http or https protocol."""
+    """Check if URL uses http or https protocol (case-insensitive)."""
     if not url or not isinstance(url, str):
         return False
-    return url.startswith(('http://', 'https://'))
+    return url.lower().startswith(('http://', 'https://'))
 
 
 def build_map_html(rows):
