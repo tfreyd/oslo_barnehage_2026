@@ -65,4 +65,3 @@ If you discover a security vulnerability in this project, please report it by:
 2. Contacting the repository owner directly for critical security issues
 
 Please do not publicly disclose security vulnerabilities until they have been addressed.
-
