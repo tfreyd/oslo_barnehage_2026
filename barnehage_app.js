@@ -243,6 +243,7 @@ function escapeHtml(value) {
 }
 
 function isSafeUrl(url) {
+  // Check type using JavaScript's typeof operator (equivalent to Python's isinstance(url, str))
   if (!url || typeof url !== 'string') return false;
   return /^https?:\/\//i.test(url);
 }
@@ -251,8 +252,8 @@ function buildPopupHtml(r) {
   const parts = [
     `<b>${escapeHtml(r.barnehage)}</b>`,
     `${t("bydelLbl")}: ${escapeHtml(r.bydel)}`,
-    `${t("liten")}: ${escapeHtml(r.spot_litenavdeling)}`,
-    `${t("stor")}: ${escapeHtml(r.spot_storavdeling)}`,
+    `${t("liten")}: ${escapeHtml(String(r.spot_litenavdeling))}`,
+    `${t("stor")}: ${escapeHtml(String(r.spot_storavdeling))}`,
     escapeHtml(r.address || "")
   ];
   return parts.join("<br>");
