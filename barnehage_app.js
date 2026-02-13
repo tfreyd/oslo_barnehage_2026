@@ -386,3 +386,6 @@ async function init() {
 
 init().catch((err) => {
   ui.results.innerHTML = `<div class="empty">Data loading error: ${String(err.message || err)}</div>`;
+});
+
+
