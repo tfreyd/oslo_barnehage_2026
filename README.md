@@ -5,6 +5,7 @@ Interactive local app to explore available kindergarten spots in Oslo for 2026.
 ## What is in this repo
 
 - `barnehage_filter_app.html`: main filter app (map + searchable result cards).
+- `barnehage_app.js`: application JavaScript code.
 - `barnehage_data.js`: JS dataset loaded by the app.
 - `barnehage_spots_2026.csv`: extracted dataset in CSV format.
 - `barnehage_spots_2026_map.html`: map-focused HTML export.

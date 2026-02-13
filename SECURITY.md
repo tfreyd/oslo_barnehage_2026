@@ -13,16 +13,22 @@ This document outlines the security measures implemented in this project.
 - Python script uses `html.escape()` when generating the static map HTML file
 
 #### URL Validation
-- URLs are validated using the `isSafeUrl()` function to ensure they start with `http://` or `https://`
+- URLs are validated using the `isSafeUrl()` function (both in JavaScript and Python) to ensure they start with `http://` or `https://`
 - This prevents `javascript:` pseudo-protocol XSS attacks
 - Invalid URLs are not rendered as links
 
 #### Content Security Policy
 - A comprehensive Content Security Policy (CSP) is implemented via meta tag
-- Restricts script sources to self and trusted CDNs (unpkg.com for Leaflet)
-- Restricts style sources to self and trusted sources (Google Fonts, unpkg.com)
-- Allows images from HTTPS sources only
+- **Scripts**: Restricted to self and trusted CDN (unpkg.com for Leaflet) - **no inline scripts allowed**
+- **Styles**: Allows inline styles and trusted sources (Google Fonts, unpkg.com)
+- **Images**: HTTPS sources only
+- **Fonts**: Self and Google Fonts only
 - Helps mitigate XSS and data injection attacks
+
+#### External Scripts
+- All application JavaScript is in external files (`barnehage_app.js`, `barnehage_data.js`)
+- No inline event handlers or inline scripts
+- CSP enforces this separation for maximum security
 
 ### API Keys
 
@@ -44,11 +50,13 @@ This ensures that the files haven't been tampered with.
 
 ### Security Best Practices
 
-1. **No inline event handlers** - All event binding is done via JavaScript
-2. **rel="noopener"** - All external links include `rel="noopener"` to prevent window.opener exploitation
-3. **HTTPS-only external resources** - All external resources are loaded over HTTPS
-4. **Input validation** - Numeric inputs are validated and bounded
-5. **Error handling** - Errors are caught and don't expose sensitive information
+1. **No inline scripts** - All JavaScript code is in external files, enforced by CSP
+2. **No inline event handlers** - All event binding is done via JavaScript
+3. **rel="noopener"** - All external links include `rel="noopener"` to prevent window.opener exploitation
+4. **HTTPS-only external resources** - All external resources are loaded over HTTPS
+5. **Input validation** - Numeric inputs are validated and bounded
+6. **URL protocol validation** - All URLs are validated before use in links
+7. **Error handling** - Errors are caught and don't expose sensitive information
 
 ## Reporting Security Issues
 
@@ -57,3 +65,4 @@ If you discover a security vulnerability in this project, please report it by:
 2. Contacting the repository owner directly for critical security issues
 
 Please do not publicly disclose security vulnerabilities until they have been addressed.
+

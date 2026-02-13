@@ -329,6 +329,13 @@ def fetch_page_data(url: str):
     return lat, lon, address
 
 
+def is_safe_url(url):
+    """Check if URL uses http or https protocol."""
+    if not url or not isinstance(url, str):
+        return False
+    return url.startswith(('http://', 'https://'))
+
+
 def build_map_html(rows):
     pts = [r for r in rows if r["latitude"] is not None and r["longitude"] is not None]
     if not pts:
@@ -353,7 +360,7 @@ def build_map_html(rows):
             f"Liten avdeling: {html.escape(str(r['spot_litenavdeling']))}<br>"
             f"Stor avdeling: {html.escape(str(r['spot_storavdeling']))}<br>"
         )
-        if r["barnehage_url"]:
+        if r["barnehage_url"] and is_safe_url(r["barnehage_url"]):
             popup += f"<a href='{html.escape(r['barnehage_url'])}' target='_blank' rel='noopener'>Barnehage-side</a>"
         popup_js = json.dumps(popup, ensure_ascii=False)
         color = BYDEL_COLORS.get(r["bydel"], "#333333")
