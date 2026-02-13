@@ -332,7 +332,7 @@ def fetch_page_data(url: str):
 def is_safe_url(url):
     """Check if URL uses http or https protocol (case-insensitive).
     
-    Uses isinstance(url, str) to verify url is a string type (equivalent to JavaScript's typeof url === 'string').
+    Validates url is a string type before checking protocol.
     """
     if not url or not isinstance(url, str):
         return False

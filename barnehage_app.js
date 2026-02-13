@@ -243,7 +243,7 @@ function escapeHtml(value) {
 }
 
 function isSafeUrl(url) {
-  // Verify url is a string using typeof operator (equivalent to Python's isinstance(url, str))
+  // Verify url is a string type before validation
   if (!url || typeof url !== 'string') return false;
   return /^https?:\/\//i.test(url);
 }
@@ -297,8 +297,8 @@ function renderResults(rows) {
         <h3>${escapeHtml(r.barnehage)}</h3>
         <div class="chips">
           <span class="chip">${escapeHtml(r.bydel)}</span>
-          <span class="chip">Liten: ${escapeHtml(String(r.spot_litenavdeling))}</span>
-          <span class="chip">Stor: ${escapeHtml(String(r.spot_storavdeling))}</span>
+          <span class="chip">${t("liten")}: ${escapeHtml(String(r.spot_litenavdeling))}</span>
+          <span class="chip">${t("stor")}: ${escapeHtml(String(r.spot_storavdeling))}</span>
         </div>
         <div class="meta">${t("address")}: ${escapeHtml(r.address || "-")}</div>
         <div>${link}</div>
