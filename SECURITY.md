@@ -32,14 +32,23 @@ This document outlines the security measures implemented in this project.
 
 ### API Keys
 
-The Algolia API keys used in `data/extract_barnehage_data.py` are:
-- **Read-only** public API keys provided by Oslo Kommune
-- Intended for client-side use in public applications
-- Access only public kindergarten data from Oslo Kommune's open data API
-- Rate-limited by Algolia's infrastructure
-- Not considered sensitive credentials
+The Algolia API keys are **no longer stored in the repository**. They must be configured via environment variables:
 
-If you believe these keys should be rotated or have concerns about their exposure, please contact Oslo Kommune directly.
+- **ALGOLIA_APP_ID**: Application ID for Oslo Kommune's Algolia index
+- **ALGOLIA_API_KEY**: Read-only API key for public data access
+- **ALGOLIA_INDEX**: Index name (defaults to `prod_oslo_kommune_no`)
+
+These credentials are:
+- **Read-only** public API keys provided by Oslo Kommune
+- Intended for accessing public kindergarten data
+- Rate-limited by Algolia's infrastructure
+
+To set up:
+1. Copy `.env.example` to `.env`
+2. Fill in your API credentials
+3. The `.env` file is excluded from version control via `.gitignore`
+
+Contact Oslo Kommune if you need access to these API keys.
 
 ### External Dependencies
 

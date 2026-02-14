@@ -30,6 +30,25 @@ Then open:
 
 ## Update data
 
+### Setup (first time only)
+
+The data extraction script requires API credentials. Copy the example environment file and fill in your API keys:
+
+```bash
+cp .env.example .env
+```
+
+Edit `.env` and add your Algolia API credentials:
+```
+ALGOLIA_APP_ID=your_app_id_here
+ALGOLIA_API_KEY=your_api_key_here
+ALGOLIA_INDEX=prod_oslo_kommune_no
+```
+
+**Note:** These are read-only public API keys for Oslo Kommune's public data. Contact Oslo Kommune if you need access.
+
+### Running the extraction
+
 From the repository root:
 
 ```bash
