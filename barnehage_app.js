@@ -229,10 +229,10 @@ function filterRows() {
   });
 }
 
-function renderStats(visibleRows, baseFilteredRows) {
-  const sumL = baseFilteredRows.reduce((s, r) => s + Number(r.spot_litenavdeling || 0), 0);
-  const sumS = baseFilteredRows.reduce((s, r) => s + Number(r.spot_storavdeling || 0), 0);
-  ui.vMatch.textContent = String(visibleRows.length);
+function renderStats(rows) {
+  const sumL = rows.reduce((s, r) => s + Number(r.spot_litenavdeling || 0), 0);
+  const sumS = rows.reduce((s, r) => s + Number(r.spot_storavdeling || 0), 0);
+  ui.vMatch.textContent = String(rows.length);
   ui.vLiten.textContent = String(sumL);
   ui.vStor.textContent = String(sumS);
 }
@@ -308,9 +308,8 @@ function renderResults(rows) {
 }
 
 function refresh() {
-  const base = baseRows();
   const rows = filterRows();
-  renderStats(rows, base);
+  renderStats(rows);
   renderMap(rows);
   renderResults(rows);
 }
