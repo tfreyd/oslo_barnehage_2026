@@ -778,7 +778,7 @@
         const radius = 5;
         const color = bydelColors[r.bydel] || "#334155";
 
-        const popupLink = r.barnehage_url
+        const popupLink = r.barnehage_url && isSafeUrl(r.barnehage_url)
           ? `<br><a class="link" href="${escapeHtml(r.barnehage_url)}" target="_blank" rel="noopener">${t("open")}</a>`
           : "";
         const popup = `<b>${escapeHtml(r.barnehage)}</b><br>${t("bydelLbl")}: ${escapeHtml(r.bydel)}<br>Liten: ${escapeHtml(r.spot_litenavdeling)}<br>Stor: ${escapeHtml(r.spot_storavdeling)}<br>${escapeHtml(r.address || "")}${popupLink}`;
@@ -796,6 +796,11 @@
       return str.replace(/[&<>'"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;',"'":'&#39;','"':'&quot;'}[c]));
     }
 
+    function isSafeUrl(url) {
+      if (!url || typeof url !== 'string') return false;
+      return /^https?:\/\//i.test(url);
+    }
+
     function renderResults(rows) {
       if (!rows.length) {
         ui.results.innerHTML = `<div class="empty">${t("noResults")}</div>`;
@@ -803,7 +808,7 @@
       }
 
       ui.results.innerHTML = rows.slice(0, 700).map(r => {
-        const link = r.barnehage_url ? `<a class="link" href="${r.barnehage_url}" target="_blank" rel="noopener">${t("open")}</a>` : "";
+        const link = r.barnehage_url && isSafeUrl(r.barnehage_url) ? `<a class="link" href="${escapeHtml(r.barnehage_url)}" target="_blank" rel="noopener">${t("open")}</a>` : "";
         return `
           <article class="card">
             <h3>${escapeHtml(r.barnehage)}</h3>
