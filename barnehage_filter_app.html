@@ -95,6 +95,20 @@
 
     .lang-select option { color: #111; }
 
+    .source-link {
+      color: #fff;
+      text-decoration: none;
+      font-size: 18px;
+      padding: 6px 8px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.35);
+    }
+
+    .source-link:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
     .layout {
       display: grid;
       grid-template-columns: 350px 1fr;
@@ -286,11 +300,20 @@
         <p id="subtitle"></p>
       </div>
       <div class="top-actions">
+        <a href="https://github.com/tfreyd/oslo_barnehage_2026" target="_blank" rel="noopener" class="source-link" aria-label="Source code">⚡</a>
         <select id="lang" class="lang-select" aria-label="Language">
           <option value="no">Norsk</option>
           <option value="en">English</option>
           <option value="fr">Français</option>
           <option value="es">Español</option>
+          <option value="ar">العربية</option>
+          <option value="ku">Kurdî</option>
+          <option value="so">Soomaali</option>
+          <option value="tr">Türkçe</option>
+          <option value="pl">Polski</option>
+          <option value="vi">Tiếng Việt</option>
+          <option value="hi">हिन्दी</option>
+          <option value="fa">فارسی</option>
         </select>
       </div>
     </header>
@@ -426,6 +449,166 @@
         noResults: "No hay resultados con estos filtros.",
         address: "Dirección",
         bydelLbl: "Distrito",
+      },
+      ar: {
+        title: "البحث عن حضانة في أوسلو (2026)",
+        subtitle: "تصفية حسب المنطقة ونوع القسم",
+        search: "البحث عن حضانة",
+        searchPh: "اكتب الاسم...",
+        bydel: "المنطقة",
+        allBydel: "جميع المناطق",
+        mode: "القسم",
+        both: "الكل",
+        liten: "أقل من 3",
+        stor: "أكثر من 3",
+        min: "الحد الأدنى من الأماكن المتاحة",
+        match: "نتائج",
+        sumLiten: "المجموع أقل من 3",
+        sumStor: "المجموع أكثر من 3",
+        open: "فتح الصفحة",
+        noResults: "لا توجد نتائج مع هذه الفلاتر.",
+        address: "العنوان",
+        bydelLbl: "المنطقة",
+      },
+      ku: {
+        title: "Pêşkêşkirina zaroktan a Osloyê (2026)",
+        subtitle: "Li gorî taxazê û awayê beşê biguhere",
+        search: "Pêşkêşkirinê bigere",
+        searchPh: "Navê binivîse...",
+        bydel: "Tax",
+        allBydel: "Hemû tax",
+        mode: "Beş",
+        both: "Herdu",
+        liten: "Ji 3 kêmtir",
+        stor: "Ji 3 zêdetir",
+        min: "Rêjmana herî kêm a cihên vala",
+        match: "Encam",
+        sumLiten: "Kurşê ji 3",
+        sumStor: "Kurşê zêde ji 3",
+        open: "Rûpel veke",
+        noResults: "Encamên vê filtirê tune.",
+        address: "Navnîşan",
+        bydelLbl: "Tax",
+      },
+      so: {
+        title: "Raadinta dhismooyinka carruurta Oslo (2026)",
+        subtitle: "Kala sooca degmada nooca qaybta",
+        search: "Raadhi dhismo",
+        searchPh: "Qor magaca...",
+        bydeg: "Degmo",
+        allBydela: "Dhamma degmooyinka",
+        mode: "Qayb",
+        both: "Labadaba",
+        liten: "Ka yar 3",
+        stor: "Ka weyn 3",
+        mindhac: "ug yaraynta joojiyeyaasha",
+        match: "Natiijo",
+        sumLiten: "Wadarta ka yar 3",
+        sumStor: "Wadarta ka weyn 3",
+        open: "Fur bogga",
+        noResults: "Natiijo maahan ee shaandheynta hadda.",
+        address: "Ciwaanka",
+        bydelLbl: "Degmo",
+      },
+      tr: {
+        title: "Oslo Anaokulu Bulucu (2026)",
+        subtitle: "İlçeye ve bölüm türüne göre filtrele",
+        search: "Anaokulu ara",
+        searchPh: "İsim yaz...",
+        bydel: "İlçe",
+        allBydel: "Tüm ilçeler",
+        mode: "Bölüm",
+        both: "Her ikisi",
+        liten: "3 yaş altı",
+        stor: "3 yaş üstü",
+        min: "Minimum boş yer",
+        match: "Sonuçlar",
+        sumLiten: "Toplam 3 yaş altı",
+        sumStor: "Toplam 3 yaş üstü",
+        open: "Sayfayı aç",
+        noResults: "Mevcut filtreler için sonuç yok.",
+        address: "Adres",
+        bydelLbl: "İlçe",
+      },
+      pl: {
+        title: "Szukaj przedszkola w Oslo (2026)",
+        subtitle: "Filtruj według dzielnicy i typu oddziału",
+        search: "Szukaj przedszkola",
+        searchPh: "Wpisz nazwę...",
+        bydel: "Dzielnica",
+        allBydel: "Wszystkie dzielnice",
+        mode: "Oddział",
+        both: "Oba",
+        liten: "Poniżej 3 lat",
+        stor: "Powyżej 3 lat",
+        min: "Minimalna liczba miejsc",
+        match: "Wyniki",
+        sumLiten: "Suma poniżej 3 lat",
+        sumStor: "Suma powyżej 3 lat",
+        open: "Otwórz stronę",
+        noResults: "Brak wyników dla bieżących filtrów.",
+        address: "Adres",
+        bydelLbl: "Dzielnica",
+      },
+      vi: {
+        title: "Tìm trường mẫu giáo ở Oslo (2026)",
+        subtitle: "Lọc theo quận và loại nhóm",
+        search: "Tìm trường mẫu giáo",
+        searchPh: "Nhập tên...",
+        bydel: "Quận",
+        allBydel: "Tất cả các quận",
+        mode: "Nhóm",
+        both: "Cả hai",
+        liten: "Dưới 3 tuổi",
+        stor: "Trên 3 tuổi",
+        min: "Số chỗ tối thiểu",
+        match: "Kết quả",
+        sumLiten: " dướiTổng 3",
+        sumStor: "Tổng trên 3",
+        open: "Mở trang",
+        noResults: "Không có kết quả cho bộ lọc hiện tại.",
+        address: "Địa chỉ",
+        bydelLbl: "Quận",
+      },
+      hi: {
+        title: "ओस्लो में नर्सरी खोजें (2026)",
+        subtitle: "जिले और खंड प्रकार के अनुसार फ़िल्टर करें",
+        search: "नर्सरी खोजें",
+        searchPh: "नाम लिखें...",
+        bydel: "जिला",
+        allBydel: "सभी जिले",
+        mode: "खंड",
+        both: "दोनों",
+        liten: "3 से कम",
+        stor: "3 से अधिक",
+        min: "न्यूनतम उपलब्ध स्थान",
+        match: "परिणाम",
+        sumLiten: "कुल 3 से कम",
+        sumStor: "कुल 3 से अधिक",
+        open: "पृष्ठ खोलें",
+        noResults: "वर्तमान फ़िल्टर के लिए कोई परिणाम नहीं।",
+        address: "पता",
+        bydelLbl: "जिला",
+      },
+      fa: {
+        title: "یافتن مهدکودک در اسلو (2026)",
+        subtitle: "فیلتر بر اساس منطقه و نوع بخش",
+        search: "جستجوی مهدکودک",
+        searchPh: "نام را بنویسید...",
+        bydel: "منطقه",
+        allBydel: "همه مناطق",
+        mode: "بخش",
+        both: "هر دو",
+        liten: "زیر 3 سال",
+        stor: "بالای 3 سال",
+        min: "حداقل فضای موجود",
+        match: "نتایج",
+        sumLiten: "مجموع زیر 3",
+        sumStor: "مجموع بالای 3",
+        open: "باز کردن صفحه",
+        noResults: "هیچ نتیجه‌ای برای فیلترهای فعلی وجود ندارد.",
+        address: "آدرس",
+        bydelLbl: "منطقه",
       }
     };
 
