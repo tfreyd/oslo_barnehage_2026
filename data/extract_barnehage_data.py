@@ -1,14 +1,31 @@
 #!/usr/bin/env python3
 import csv
+import html
 import io
 import json
+import os
 import re
 import subprocess
+import sys
 import unicodedata
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from difflib import SequenceMatcher
 from pathlib import Path
 from urllib import parse, request
+
+# Load environment variables from .env file if it exists
+def load_env_file(env_path=".env"):
+    """Load environment variables from a .env file."""
+    env_file = Path(__file__).parent.parent / env_path
+    if env_file.exists():
+        with open(env_file) as f:
+            for line in f:
+                line = line.strip()
+                if line and not line.startswith('#') and '=' in line:
+                    key, value = line.split('=', 1)
+                    os.environ.setdefault(key.strip(), value.strip())
+
+load_env_file()
 
 PDF_PATTERN = "Forventet-ledig-kapasitet-2026-*.pdf"
 CSV_OUTPUT = Path("barnehage_spots_2026.csv")
@@ -68,9 +85,19 @@ BYDEL_TAG_MAP = {
     "Østensjø": 948,
 }
 
-ALGOLIA_APP_ID = "NJ4QX1MFJ2"
-ALGOLIA_API_KEY = "4ce897d2ad7bca6a9fbcac2888b35801"
-ALGOLIA_INDEX = "prod_oslo_kommune_no"
+# Load Algolia API configuration from environment variables
+# These are read-only public API keys for Oslo Kommune's public data
+# Set these in a .env file or as environment variables
+ALGOLIA_APP_ID = os.getenv("ALGOLIA_APP_ID")
+ALGOLIA_API_KEY = os.getenv("ALGOLIA_API_KEY")
+ALGOLIA_INDEX = os.getenv("ALGOLIA_INDEX", "prod_oslo_kommune_no")
+
+# Validate that required environment variables are set
+if not ALGOLIA_APP_ID or not ALGOLIA_API_KEY:
+    print("Error: Missing required environment variables.", file=sys.stderr)
+    print("Please set ALGOLIA_APP_ID and ALGOLIA_API_KEY.", file=sys.stderr)
+    print("You can copy .env.example to .env and fill in the values.", file=sys.stderr)
+    sys.exit(1)
 
 
 def normalize_spaces(s: str) -> str:
@@ -326,6 +353,18 @@ def fetch_page_data(url: str):
     return lat, lon, address
 
 
+def is_safe_url(url):
+    """Check if URL uses http or https protocol (case-insensitive).
+    
+    Validates url is a string type before checking protocol.
+    """
+    if not url or not isinstance(url, str):
+        return False
+    return url.lower().startswith(('http://', 'https://'))
+
+
+
+
 def build_map_html(rows):
     pts = [r for r in rows if r["latitude"] is not None and r["longitude"] is not None]
     if not pts:
@@ -345,13 +384,13 @@ def build_map_html(rows):
         bydel = json.dumps(r["bydel"], ensure_ascii=False)
         url = json.dumps(r["barnehage_url"] or "", ensure_ascii=False)
         popup = (
-            f"<b>{r['barnehage']}</b><br>"
-            f"Bydel: {r['bydel']}<br>"
-            f"Liten avdeling: {r['spot_litenavdeling']}<br>"
-            f"Stor avdeling: {r['spot_storavdeling']}<br>"
+            f"<b>{html.escape(r['barnehage'])}</b><br>"
+            f"Bydel: {html.escape(r['bydel'])}<br>"
+            f"Liten avdeling: {html.escape(str(r['spot_litenavdeling']))}<br>"
+            f"Stor avdeling: {html.escape(str(r['spot_storavdeling']))}<br>"
         )
-        if r["barnehage_url"]:
-            popup += f"<a href='{r['barnehage_url']}' target='_blank' rel='noopener'>Barnehage-side</a>"
+        if r["barnehage_url"] and is_safe_url(r["barnehage_url"]):
+            popup += f"<a href='{html.escape(r['barnehage_url'])}' target='_blank' rel='noopener'>Barnehage-side</a>"
         popup_js = json.dumps(popup, ensure_ascii=False)
         color = BYDEL_COLORS.get(r["bydel"], "#333333")
         points_js.append(
