@@ -2,3 +2,9 @@ __pycache__/
 *.py[cod]
 .DS_Store
 .env
+*.csv
+*.json
+*.log
+*.cache
+telemetry-id
+audit_*.py
