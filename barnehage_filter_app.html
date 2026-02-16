@@ -778,10 +778,14 @@
         const radius = 5;
         const color = bydelColors[r.bydel] || "#334155";
 
+        const slugify = (t) => t.toLowerCase().replace(/[æøå]/g,e=>({'æ':'a','ø':'o','å':'a'}[e])).replace(/[^\w\s-]/g,'').replace(/\s+/g,'-').replace(/-+/g,'-').trim();
+        const faktaUrl = r.barnehage ? `https://barnehagefakta.no/barnehage/${slugify(r.barnehage)}` : '';
+        
         const popupLink = r.barnehage_url && isSafeUrl(r.barnehage_url)
           ? `<br><a class="link" href="${escapeHtml(r.barnehage_url)}" target="_blank" rel="noopener">${t("open")}</a>`
           : "";
-        const popup = `<b>${escapeHtml(r.barnehage)}</b><br>${t("bydelLbl")}: ${escapeHtml(r.bydel)}<br>Liten: ${escapeHtml(r.spot_litenavdeling)}<br>Stor: ${escapeHtml(r.spot_storavdeling)}<br>${escapeHtml(r.address || "")}${popupLink}`;
+        const faktaLink = faktaUrl ? `<br><a class="link" href="${faktaUrl}" target="_blank" rel="noopener">Barnehagefakta</a>` : "";
+        const popup = `<b>${escapeHtml(r.barnehage)}</b><br>${t("bydelLbl")}: ${escapeHtml(r.bydel)}<br>Liten: ${escapeHtml(r.spot_litenavdeling)}<br>Stor: ${escapeHtml(r.spot_storavdeling)}<br>${escapeHtml(r.address || "")}${popupLink}${faktaLink}`;
 
         L.circleMarker([lat, lon], {
           radius, color, fillColor: color, fillOpacity: 0.8, weight: 1
@@ -808,7 +812,11 @@
       }
 
       ui.results.innerHTML = rows.slice(0, 700).map(r => {
+        const slugify = (t) => t.toLowerCase().replace(/[æøå]/g,e=>({'æ':'a','ø':'o','å':'a'}[e])).replace(/[^\w\s-]/g,'').replace(/\s+/g,'-').replace(/-+/g,'-').trim();
+        const faktaUrl = r.barnehage ? `https://barnehagefakta.no/barnehage/${slugify(r.barnehage)}` : '';
+        
         const link = r.barnehage_url && isSafeUrl(r.barnehage_url) ? `<a class="link" href="${escapeHtml(r.barnehage_url)}" target="_blank" rel="noopener">${t("open")}</a>` : "";
+        const faktaLink = faktaUrl ? `<a class="link" href="${faktaUrl}" target="_blank" rel="noopener">Barnehagefakta</a>` : "";
         return `
           <article class="card">
             <h3>${escapeHtml(r.barnehage)}</h3>
@@ -818,7 +826,7 @@
               <span class="chip">Stor: ${escapeHtml(r.spot_storavdeling)}</span>
             </div>
             <div class="meta">${t("address")}: ${escapeHtml(r.address || "-")}</div>
-            <div>${link}</div>
+            <div>${link} ${faktaLink}</div>
           </article>
         `;
       }).join("");
