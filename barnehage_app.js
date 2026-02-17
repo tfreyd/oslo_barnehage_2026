@@ -551,25 +551,17 @@ async function loadRows() {
 }
 
 // Map of "lat,lon" -> orgnr for barnehagefakta lookup
-let barnehagefaktaMap = {};
+let barnehagefaktaList = [];
 
 async function loadBarnehagefaktaMap() {
   try {
-    // Fetch all barnehager in Oslo area
-    const res = await fetch("https://barnehagefakta.no/api/Location/radius?lat=59.9139&lon=10.7522&radius=25000");
+    // Fetch all barnehagers in Oslo area
+    const res = await fetch("https://barnehagefakta.no/api/Location/radius?lat=59.9139&lon=10.7522&radius=50000");
     if (res.ok) {
       const data = await res.json();
-      // Build map using coordinates as key
-      data.forEach(b => {
-        if (b.koordinatLatLng && b.orgnr) {
-          const key = `${b.koordinatLatLng[0].toFixed(5)},${b.koordinatLatLng[1].toFixed(5)}`;
-          barnehagefaktaMap[key] = {
-            orgnr: b.orgnr,
-            navn: b.navn
-          };
-        }
-      });
-      console.log(`Loaded ${Object.keys(barnehagefaktaMap).length} barnehagefakta entries`);
+      // Filter to Oslo only (kommunenummer 0301)
+      barnehagefaktaList = data.filter(b => b.koordinatLatLng && b.orgnr && b.kommunenummer === "0301");
+      console.log(`Loaded ${barnehagefaktaList.length} Oslo barnehagefakta entries`);
     }
   } catch (e) {
     console.warn("Could not load barnehagefakta map:", e);
@@ -578,11 +570,25 @@ async function loadBarnehagefaktaMap() {
 
 function getBarnehagefaktaUrl(row) {
   if (!row.latitude || !row.longitude) return null;
-  const key = `${Number(row.latitude).toFixed(5)},${Number(row.longitude).toFixed(5)}`;
-  const entry = barnehagefaktaMap[key];
-  if (entry && entry.orgnr) {
-    const slug = (entry.navn || "").toLowerCase().replace(/[æøå]/g, e => ({"æ": "a", "ø": "o", "å": "a"}[e])).replace(/[^\w\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-").trim();
-    return `https://barnehagefakta.no/barnehage/${entry.orgnr}/${slug}`;
+  const lat = Number(row.latitude);
+  const lon = Number(row.longitude);
+  
+  // Find closest match within ~100 meters
+  let closest = null;
+  let minDist = Infinity;
+  for (const b of barnehagefaktaList) {
+    const [blat, blon] = b.koordinatLatLng;
+    const dist = Math.sqrt(Math.pow(lat - blat, 2) + Math.pow(lon - blon, 2));
+    // ~100m threshold (0.001 degrees ≈ 100m)
+    if (dist < 0.001 && dist < minDist) {
+      minDist = dist;
+      closest = b;
+    }
+  }
+  
+  if (closest) {
+    const slug = (closest.navn || "").toLowerCase().replace(/[æøå]/g, e => ({"æ": "a", "ø": "o", "å": "a"}[e])).replace(/[^\w\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-").trim();
+    return `https://barnehagefakta.no/barnehage/${closest.orgnr}/${slug}`;
   }
   return null;
 }
