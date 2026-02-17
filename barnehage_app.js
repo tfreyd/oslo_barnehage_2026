@@ -421,11 +421,7 @@ function buildPopupHtml(r) {
 
 function buildLinkHtml(barnehage, url) {
   if (!url || !isSafeUrl(url)) return "";
-  const slugify = (t) => t.toLowerCase().replace(/[æøå]/g,e=>({'æ':'a','ø':'o','å':'a'}[e])).replace(/[^\w\s-]/g,'').replace(/\s+/g,'-').replace(/-+/g,'-').trim();
-  const faktaUrl = barnehage ? `https://barnehagefakta.no/barnehage/${slugify(barnehage)}` : '';
-  const osloLink = `<a class="btn" href="${escapeHtml(url)}" target="_blank" rel="noopener">Oslo kommune</a>`;
-  const faktaLink = faktaUrl ? `<a class="btn" href="${faktaUrl}" target="_blank" rel="noopener">Barnehagefakta</a>` : '';
-  return osloLink + " " + faktaLink;
+  return `<a class="btn" href="${escapeHtml(url)}" target="_blank" rel="noopener">Oslo kommune</a>`;
 }
 
 function renderMap(rows) {
