@@ -271,8 +271,18 @@
     }
 
     .meta { font-size: 13px; color: #3a5565; }
-    .link { color: #0f766e; text-decoration: none; font-weight: 600; }
-    .link:hover { text-decoration: underline; }
+    .link { 
+      color: #0f766e; 
+      text-decoration: none; 
+      font-weight: 600;
+      display: inline-block;
+      padding: 6px 12px;
+      margin: 2px;
+      border-radius: 6px;
+      font-size: 13px;
+    }
+    .link[href] { background: #e0f2f1; }
+    .link:hover { background: #b2dfdb; text-decoration: none; }
 
     .empty {
       background: #fff;
