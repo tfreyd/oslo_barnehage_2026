@@ -795,7 +795,9 @@
         const popupOsloLink = r.barnehage_url && isSafeUrl(r.barnehage_url)
           ? `<a class="btn" href="${escapeHtml(r.barnehage_url)}" target="_blank" rel="noopener">Oslo kommune</a>`
           : "";
-        const popup = `<b>${escapeHtml(r.barnehage)}</b><br>${t("bydelLbl")}: ${escapeHtml(r.bydel)}<br>Liten: ${escapeHtml(r.spot_litenavdeling)}<br>Stor: ${escapeHtml(r.spot_storavdeling)}<br>${escapeHtml(r.address || "")}<br>${popupOsloLink}`;
+        const popupFaktaUrl = getBarnehagefaktaUrl(r);
+        const popupFaktaLink = popupFaktaUrl ? `<a class="btn" href="${escapeHtml(popupFaktaUrl)}" target="_blank" rel="noopener">Barnehagefakta</a>` : "";
+        const popup = `<b>${escapeHtml(r.barnehage)}</b><br>${t("bydelLbl")}: ${escapeHtml(r.bydel)}<br>Liten: ${escapeHtml(r.spot_litenavdeling)}<br>Stor: ${escapeHtml(r.spot_storavdeling)}<br>${escapeHtml(r.address || "")}<br>${popupOsloLink} ${popupFaktaLink}`;
 
         L.circleMarker([lat, lon], {
           radius, color, fillColor: color, fillOpacity: 0.8, weight: 1
@@ -822,7 +824,7 @@
       }
 
       ui.results.innerHTML = rows.slice(0, 700).map(r => {
-        const osloLink = r.barnehage_url && isSafeUrl(r.barnehage_url) ? `<a class="btn" href="${escapeHtml(r.barnehage_url)}" target="_blank" rel="noopener">Oslo kommune</a>` : "";
+        const link = buildLinkHtml(r);
         return `
           <article class="card">
             <h3>${escapeHtml(r.barnehage)}</h3>
@@ -832,7 +834,7 @@
               <span class="chip">Stor: ${escapeHtml(r.spot_storavdeling)}</span>
             </div>
             <div class="meta">${t("address")}: ${escapeHtml(r.address || "-")}</div>
-            <div>${osloLink}</div>
+            <div>${link}</div>
           </article>
         `;
       }).join("");
