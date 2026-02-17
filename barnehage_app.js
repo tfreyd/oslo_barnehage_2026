@@ -419,9 +419,18 @@ function buildPopupHtml(r) {
   return parts.join("<br>");
 }
 
-function buildLinkHtml(barnehage, url) {
-  if (!url || !isSafeUrl(url)) return "";
-  return `<a class="btn" href="${escapeHtml(url)}" target="_blank" rel="noopener">Oslo kommune</a>`;
+function buildLinkHtml(row) {
+  const osloUrl = row.barnehage_url;
+  const faktaUrl = getBarnehagefaktaUrl(row);
+  
+  let html = "";
+  if (osloUrl && isSafeUrl(osloUrl)) {
+    html += `<a class="btn" href="${escapeHtml(osloUrl)}" target="_blank" rel="noopener">Oslo kommune</a> `;
+  }
+  if (faktaUrl) {
+    html += `<a class="btn" href="${escapeHtml(faktaUrl)}" target="_blank" rel="noopener">Barnehagefakta</a>`;
+  }
+  return html;
 }
 
 function renderMap(rows) {
@@ -451,7 +460,7 @@ function renderResults(rows) {
   }
 
   ui.results.innerHTML = rows.slice(0, 700).map(r => {
-    const link = buildLinkHtml(r.barnehage, r.barnehage_url);
+    const link = buildLinkHtml(r);
     return `
       <article class="card">
         <h3>${escapeHtml(r.barnehage)}</h3>
@@ -541,6 +550,43 @@ async function loadRows() {
   return [];
 }
 
+// Map of "lat,lon" -> orgnr for barnehagefakta lookup
+let barnehagefaktaMap = {};
+
+async function loadBarnehagefaktaMap() {
+  try {
+    // Fetch all barnehager in Oslo area
+    const res = await fetch("https://barnehagefakta.no/api/Location/radius?lat=59.9139&lon=10.7522&radius=25000");
+    if (res.ok) {
+      const data = await res.json();
+      // Build map using coordinates as key
+      data.forEach(b => {
+        if (b.koordinatLatLng && b.orgnr) {
+          const key = `${b.koordinatLatLng[0].toFixed(5)},${b.koordinatLatLng[1].toFixed(5)}`;
+          barnehagefaktaMap[key] = {
+            orgnr: b.orgnr,
+            navn: b.navn
+          };
+        }
+      });
+      console.log(`Loaded ${Object.keys(barnehagefaktaMap).length} barnehagefakta entries`);
+    }
+  } catch (e) {
+    console.warn("Could not load barnehagefakta map:", e);
+  }
+}
+
+function getBarnehagefaktaUrl(row) {
+  if (!row.latitude || !row.longitude) return null;
+  const key = `${Number(row.latitude).toFixed(5)},${Number(row.longitude).toFixed(5)}`;
+  const entry = barnehagefaktaMap[key];
+  if (entry && entry.orgnr) {
+    const slug = (entry.navn || "").toLowerCase().replace(/[æøå]/g, e => ({"æ": "a", "ø": "o", "å": "a"}[e])).replace(/[^\w\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-").trim();
+    return `https://barnehagefakta.no/barnehage/${entry.orgnr}/${slug}`;
+  }
+  return null;
+}
+
 async function init() {
   setLanguage();
   bind();
@@ -552,7 +598,12 @@ async function init() {
     });
     window.addEventListener("resize", () => map.invalidateSize());
   }
-  allRows = await loadRows();
+  // Load barnehagefakta mapping in parallel with CSV data
+  const [rows] = await Promise.all([
+    loadRows(),
+    loadBarnehagefaktaMap()
+  ]);
+  allRows = rows;
   if (!Array.isArray(allRows) || !allRows.length) {
     throw new Error("No data source available (embedded/json/csv).");
   }
