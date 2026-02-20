@@ -550,45 +550,9 @@ async function loadRows() {
   return [];
 }
 
-// Map of "lat,lon" -> orgnr for barnehagefakta lookup
-let barnehagefaktaList = [];
-
-async function loadBarnehagefaktaMap() {
-  try {
-    // Fetch all barnehagers in Oslo area
-    const res = await fetch("https://barnehagefakta.no/api/Location/radius?lat=59.9139&lon=10.7522&radius=50000");
-    if (res.ok) {
-      const data = await res.json();
-      // Filter to Oslo only (kommunenummer 0301)
-      barnehagefaktaList = data.filter(b => b.koordinatLatLng && b.orgnr && b.kommunenummer === "0301");
-      console.log(`Loaded ${barnehagefaktaList.length} Oslo barnehagefakta entries`);
-    }
-  } catch (e) {
-    console.warn("Could not load barnehagefakta map:", e);
-  }
-}
-
 function getBarnehagefaktaUrl(row) {
-  if (!row.latitude || !row.longitude) return null;
-  const lat = Number(row.latitude);
-  const lon = Number(row.longitude);
-  
-  // Find closest match within ~100 meters
-  let closest = null;
-  let minDist = Infinity;
-  for (const b of barnehagefaktaList) {
-    const [blat, blon] = b.koordinatLatLng;
-    const dist = Math.sqrt(Math.pow(lat - blat, 2) + Math.pow(lon - blon, 2));
-    // ~100m threshold (0.001 degrees ≈ 100m)
-    if (dist < 0.001 && dist < minDist) {
-      minDist = dist;
-      closest = b;
-    }
-  }
-  
-  if (closest) {
-    const slug = (closest.navn || "").toLowerCase().replace(/[æøå]/g, e => ({"æ": "a", "ø": "o", "å": "a"}[e])).replace(/[^\w\s-]/g, "").replace(/\s+/g, "-").replace(/-+/g, "-").trim();
-    return `https://barnehagefakta.no/barnehage/${closest.orgnr}/${slug}`;
+  if (isSafeUrl(row.barnehagefakta_url)) {
+    return row.barnehagefakta_url;
   }
   return null;
 }
@@ -604,12 +568,7 @@ async function init() {
     });
     window.addEventListener("resize", () => map.invalidateSize());
   }
-  // Load barnehagefakta mapping in parallel with CSV data
-  const [rows] = await Promise.all([
-    loadRows(),
-    loadBarnehagefaktaMap()
-  ]);
-  allRows = rows;
+  allRows = await loadRows();
   if (!Array.isArray(allRows) || !allRows.length) {
     throw new Error("No data source available (embedded/json/csv).");
   }
@@ -620,4 +579,3 @@ async function init() {
 init().catch((err) => {
   ui.results.innerHTML = `<div class="empty">Data loading error: ${String(err.message || err)}</div>`;
 });
-
