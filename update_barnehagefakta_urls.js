@@ -182,6 +182,8 @@ function coordPass(row, candidate) {
 
 function chooseBestCandidate(row, candidates) {
   if (!candidates.length) return null;
+  // User rule: if API returns exactly one address/result, accept it directly.
+  if (candidates.length === 1) return candidates[0];
   const { line, postnr } = extractAddressParts(row.address);
 
   const scored = candidates.map((c) => {
