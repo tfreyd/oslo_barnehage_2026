@@ -4,7 +4,7 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <!-- CSP restricts all content sources to trusted origins only. -->
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https://*.tile.openstreetmap.org https://unpkg.com data:; connect-src 'self' https://unpkg.com;" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://unpkg.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com https://unpkg.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' https://*.tile.openstreetmap.org https://unpkg.com data:; connect-src 'self' https://unpkg.com https://barnehagefakta.no;" />
   <title>Oslo Barnehage Finder</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -271,18 +271,22 @@
     }
 
     .meta { font-size: 13px; color: #3a5565; }
-    .link { 
-      color: #0f766e; 
-      text-decoration: none; 
-      font-weight: 600;
-      display: inline-block;
-      padding: 6px 12px;
-      margin: 2px;
+    .link { color: #0f766e; text-decoration: none; font-weight: 600; }
+    .link:hover { text-decoration: underline; }
+
+    .btn {
+      display: inline-block !important;
+      padding: 8px 14px !important;
+      margin: 4px 2px !important;
+      background: #0f766e !important;
+      color: #fff !important;
+      text-decoration: none !important;
       border-radius: 6px;
-      font-size: 13px;
+      font-size: 13px !important;
+      font-weight: 600 !important;
     }
-    .link[href] { background: #e0f2f1; }
-    .link:hover { background: #b2dfdb; text-decoration: none; }
+    .btn:hover { background: #0d5f59 !important; }
+    .links { margin-top: 8px; }
 
     .empty {
       background: #fff;
@@ -788,14 +792,12 @@
         const radius = 5;
         const color = bydelColors[r.bydel] || "#334155";
 
-        const slugify = (t) => t.toLowerCase().replace(/[æøå]/g,e=>({'æ':'a','ø':'o','å':'a'}[e])).replace(/[^\w\s-]/g,'').replace(/\s+/g,'-').replace(/-+/g,'-').trim();
-        const faktaUrl = r.barnehage ? `https://barnehagefakta.no/barnehage/${slugify(r.barnehage)}` : '';
-        
-        const popupLink = r.barnehage_url && isSafeUrl(r.barnehage_url)
-          ? `<br><a class="link" href="${escapeHtml(r.barnehage_url)}" target="_blank" rel="noopener">${t("open")}</a>`
+        const popupOsloLink = r.barnehage_url && isSafeUrl(r.barnehage_url)
+          ? `<a class="btn" href="${escapeHtml(r.barnehage_url)}" target="_blank" rel="noopener">Oslo kommune</a>`
           : "";
-        const faktaLink = faktaUrl ? `<br><a class="link" href="${faktaUrl}" target="_blank" rel="noopener">Barnehagefakta</a>` : "";
-        const popup = `<b>${escapeHtml(r.barnehage)}</b><br>${t("bydelLbl")}: ${escapeHtml(r.bydel)}<br>Liten: ${escapeHtml(r.spot_litenavdeling)}<br>Stor: ${escapeHtml(r.spot_storavdeling)}<br>${escapeHtml(r.address || "")}${popupLink}${faktaLink}`;
+        const popupFaktaUrl = getBarnehagefaktaUrl(r);
+        const popupFaktaLink = popupFaktaUrl ? `<a class="btn" href="${escapeHtml(popupFaktaUrl)}" target="_blank" rel="noopener">Barnehagefakta</a>` : "";
+        const popup = `<b>${escapeHtml(r.barnehage)}</b><br>${t("bydelLbl")}: ${escapeHtml(r.bydel)}<br>Liten: ${escapeHtml(r.spot_litenavdeling)}<br>Stor: ${escapeHtml(r.spot_storavdeling)}<br>${escapeHtml(r.address || "")}<br>${popupOsloLink} ${popupFaktaLink}`;
 
         L.circleMarker([lat, lon], {
           radius, color, fillColor: color, fillOpacity: 0.8, weight: 1
@@ -822,11 +824,7 @@
       }
 
       ui.results.innerHTML = rows.slice(0, 700).map(r => {
-        const slugify = (t) => t.toLowerCase().replace(/[æøå]/g,e=>({'æ':'a','ø':'o','å':'a'}[e])).replace(/[^\w\s-]/g,'').replace(/\s+/g,'-').replace(/-+/g,'-').trim();
-        const faktaUrl = r.barnehage ? `https://barnehagefakta.no/barnehage/${slugify(r.barnehage)}` : '';
-        
-        const link = r.barnehage_url && isSafeUrl(r.barnehage_url) ? `<a class="link" href="${escapeHtml(r.barnehage_url)}" target="_blank" rel="noopener">${t("open")}</a>` : "";
-        const faktaLink = faktaUrl ? `<a class="link" href="${faktaUrl}" target="_blank" rel="noopener">Barnehagefakta</a>` : "";
+        const link = buildLinkHtml(r);
         return `
           <article class="card">
             <h3>${escapeHtml(r.barnehage)}</h3>
@@ -836,7 +834,7 @@
               <span class="chip">Stor: ${escapeHtml(r.spot_storavdeling)}</span>
             </div>
             <div class="meta">${t("address")}: ${escapeHtml(r.address || "-")}</div>
-            <div>${link} ${faktaLink}</div>
+            <div>${link}</div>
           </article>
         `;
       }).join("");

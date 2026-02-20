@@ -419,9 +419,18 @@ function buildPopupHtml(r) {
   return parts.join("<br>");
 }
 
-function buildLinkHtml(url) {
-  if (!url || !isSafeUrl(url)) return "";
-  return `<a class="link" href="${escapeHtml(url)}" target="_blank" rel="noopener">${t("open")}</a>`;
+function buildLinkHtml(row) {
+  const osloUrl = row.barnehage_url;
+  const faktaUrl = getBarnehagefaktaUrl(row);
+  
+  let html = "";
+  if (osloUrl && isSafeUrl(osloUrl)) {
+    html += `<a class="btn" href="${escapeHtml(osloUrl)}" target="_blank" rel="noopener">Oslo kommune</a> `;
+  }
+  if (faktaUrl) {
+    html += `<a class="btn" href="${escapeHtml(faktaUrl)}" target="_blank" rel="noopener">Barnehagefakta</a>`;
+  }
+  return html;
 }
 
 function renderMap(rows) {
@@ -451,7 +460,7 @@ function renderResults(rows) {
   }
 
   ui.results.innerHTML = rows.slice(0, 700).map(r => {
-    const link = buildLinkHtml(r.barnehage_url);
+    const link = buildLinkHtml(r);
     return `
       <article class="card">
         <h3>${escapeHtml(r.barnehage)}</h3>
@@ -541,6 +550,13 @@ async function loadRows() {
   return [];
 }
 
+function getBarnehagefaktaUrl(row) {
+  if (isSafeUrl(row.barnehagefakta_url)) {
+    return row.barnehagefakta_url;
+  }
+  return null;
+}
+
 async function init() {
   setLanguage();
   bind();
@@ -563,4 +579,3 @@ async function init() {
 init().catch((err) => {
   ui.results.innerHTML = `<div class="empty">Data loading error: ${String(err.message || err)}</div>`;
 });
-
