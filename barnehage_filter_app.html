@@ -795,7 +795,20 @@
     }
 
     function loadZipCodes(rows) {
-      const zipCodes = [...new Set(rows.map(r => r.zip_code).filter(Boolean))].sort((a,b) => a.localeCompare(b));
+      // Ensure all rows have zip_code property by extracting from address if needed
+      const rowsWithZip = rows.map(r => {
+        if (!r.zip_code && r.address) {
+          const zipMatch = r.address.match(/(\d{4})\s*(?:OSLO|Oslo)/);
+          return { ...r, zip_code: zipMatch ? zipMatch[1] : "" };
+        }
+        return r;
+      });
+      
+      const zipCodes = [...new Set(rowsWithZip.map(r => r.zip_code).filter(Boolean))].sort((a,b) => a.localeCompare(b));
+      
+      // Debug: log zip codes being loaded
+      console.log("Loading zip codes:", zipCodes);
+      
       for (const z of zipCodes) {
         const opt = document.createElement("option");
         opt.value = z;
