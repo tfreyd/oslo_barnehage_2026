@@ -795,43 +795,14 @@
     }
 
     function loadZipCodes(rows) {
-      console.log("loadZipCodes called with", rows.length, "rows");
-      console.log("First few rows:", rows.slice(0, 3));
+      const zipCodes = [...new Set(rows.map(r => r.zip_code).filter(Boolean))].sort((a,b) => a.localeCompare(b));
       
-      // Ensure all rows have zip_code property by extracting from address if needed
-      const rowsWithZip = rows.map(r => {
-        if (!r.zip_code && r.address) {
-          const zipMatch = r.address.match(/(\d{4})\s*(?:OSLO|Oslo)/);
-          const extractedZip = zipMatch ? zipMatch[1] : "";
-          console.log("Extracted zip from address:", r.address, "->", extractedZip);
-          return { ...r, zip_code: extractedZip };
-        }
-        return r;
-      });
-      
-      console.log("Rows with zip codes:", rowsWithZip.slice(0, 3));
-      
-      const allZipCodes = rowsWithZip.map(r => r.zip_code);
-      console.log("All zip codes (including empty):", allZipCodes.slice(0, 10));
-      
-      const filteredZipCodes = allZipCodes.filter(Boolean);
-      console.log("Filtered zip codes (non-empty):", filteredZipCodes.slice(0, 10));
-      
-      const uniqueZipCodes = [...new Set(filteredZipCodes)];
-      console.log("Unique zip codes:", uniqueZipCodes);
-      
-      const sortedZipCodes = uniqueZipCodes.sort((a,b) => a.localeCompare(b));
-      console.log("Sorted zip codes:", sortedZipCodes);
-      
-      for (const z of sortedZipCodes) {
+      for (const z of zipCodes) {
         const opt = document.createElement("option");
         opt.value = z;
         opt.textContent = z;
         ui.zipCode.appendChild(opt);
-        console.log("Added zip code option:", z);
       }
-      
-      console.log("Final dropdown options count:", ui.zipCode.options.length);
     }
 
     function baseRows() {
@@ -1014,11 +985,23 @@
         window.addEventListener("resize", () => map.invalidateSize());
       }
       allRows = await loadRows();
-      console.log("Loaded", allRows.length, "rows");
-      console.log("Sample row:", allRows[0]);
       if (!Array.isArray(allRows) || !allRows.length) {
         throw new Error("No data source available (embedded/json/csv).");
       }
+      
+      // Ensure all rows have zip_code property for both CSV and pre-loaded data
+      allRows = allRows.map(row => {
+        if (!row.zip_code && row.address) {
+          // More robust zip code extraction - look for 4 digits followed by optional OSLO/Oslo
+          const zipMatch = row.address.match(/(\d{4})\s*(?:OSLO|Oslo)?/i);
+          // Also try alternative pattern if first one fails (just 4 digits)
+          const zipMatchSimple = row.address.match(/(\d{4})/);
+          const extractedZip = zipMatch ? zipMatch[1] : (zipMatchSimple ? zipMatchSimple[1] : "");
+          return { ...row, zip_code: extractedZip };
+        }
+        return row;
+      });
+      
       loadBydeler(allRows);
       loadZipCodes(allRows);
       refresh();
