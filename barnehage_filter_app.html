@@ -355,6 +355,11 @@
           </div>
 
           <div class="field">
+            <label id="lbl-zip" for="zipCode"></label>
+            <select id="zipCode"><option value="ALL"></option></select>
+          </div>
+
+          <div class="field">
             <label id="lbl-min" for="minSpots"></label>
             <input id="minSpots" type="number" min="0" step="1" value="0" />
           </div>
@@ -390,6 +395,8 @@
         search: "Søk barnehage",
         searchPh: "Skriv navn...",
         bydel: "Bydel",
+        zip: "Postnummer",
+        allZip: "Alle postnumre",
         allBydel: "Alle bydeler",
         mode: "Avdeling",
         both: "Begge",
@@ -410,6 +417,8 @@
         search: "Search kindergarten",
         searchPh: "Type name...",
         bydel: "District",
+        zip: "Zip code",
+        allZip: "All zip codes",
         allBydel: "All districts",
         mode: "Section",
         both: "Both",
@@ -430,6 +439,8 @@
         search: "Rechercher une crèche",
         searchPh: "Saisir un nom...",
         bydel: "District",
+        zip: "Code postal",
+        allZip: "Tous les codes postaux",
         allBydel: "Tous les districts",
         mode: "Section",
         both: "Les deux",
@@ -450,6 +461,8 @@
         search: "Buscar guardería",
         searchPh: "Escribe un nombre...",
         bydel: "Distrito",
+        zip: "Código postal",
+        allZip: "Todos los códigos postales",
         allBydel: "Todos los distritos",
         mode: "Sección",
         both: "Ambas",
@@ -470,6 +483,8 @@
         search: "البحث عن حضانة",
         searchPh: "اكتب الاسم...",
         bydel: "المنطقة",
+        zip: "الرمز البريدي",
+        allZip: "جميع الأرقام البريدية",
         allBydel: "جميع المناطق",
         mode: "القسم",
         both: "الكل",
@@ -490,6 +505,8 @@
         search: "Pêşkêşkirinê bigere",
         searchPh: "Navê binivîse...",
         bydel: "Tax",
+        zip: "Koda postayê",
+        allZip: "Hemû kodên postayê",
         allBydel: "Hemû tax",
         mode: "Beş",
         both: "Herdu",
@@ -510,6 +527,8 @@
         search: "Raadhi dhismo",
         searchPh: "Qor magaca...",
         bydeg: "Degmo",
+        zip: "Koodka boosta",
+        allZip: "Dhamma koodka boosta",
         allBydela: "Dhamma degmooyinka",
         mode: "Qayb",
         both: "Labadaba",
@@ -530,6 +549,8 @@
         search: "Anaokulu ara",
         searchPh: "İsim yaz...",
         bydel: "İlçe",
+        zip: "Posta kodu",
+        allZip: "Tüm posta kodları",
         allBydel: "Tüm ilçeler",
         mode: "Bölüm",
         both: "Her ikisi",
@@ -550,6 +571,8 @@
         search: "Szukaj przedszkola",
         searchPh: "Wpisz nazwę...",
         bydel: "Dzielnica",
+        zip: "Kod pocztowy",
+        allZip: "Wszystkie kody pocztowe",
         allBydel: "Wszystkie dzielnice",
         mode: "Oddział",
         both: "Oba",
@@ -570,6 +593,8 @@
         search: "Tìm trường mẫu giáo",
         searchPh: "Nhập tên...",
         bydel: "Quận",
+        zip: "Mã bưu điện",
+        allZip: "Tất cả mã bưu điện",
         allBydel: "Tất cả các quận",
         mode: "Nhóm",
         both: "Cả hai",
@@ -590,6 +615,8 @@
         search: "नर्सरी खोजें",
         searchPh: "नाम लिखें...",
         bydel: "जिला",
+        zip: "पिन कोड",
+        allZip: "सभी पिन कोड",
         allBydel: "सभी जिले",
         mode: "खंड",
         both: "दोनों",
@@ -610,6 +637,8 @@
         search: "جستجوی مهدکودک",
         searchPh: "نام را بنویسید...",
         bydel: "منطقه",
+        zip: "کد پستی",
+        allZip: "همه کدهای پستی",
         allBydel: "همه مناطق",
         mode: "بخش",
         both: "هر دو",
@@ -653,12 +682,14 @@
       lang: document.getElementById("lang"),
       search: document.getElementById("search"),
       bydel: document.getElementById("bydel"),
+      zipCode: document.getElementById("zipCode"),
       minSpots: document.getElementById("minSpots"),
       results: document.getElementById("results"),
       title: document.getElementById("title"),
       subtitle: document.getElementById("subtitle"),
       lblSearch: document.getElementById("lbl-search"),
       lblBydel: document.getElementById("lbl-bydel"),
+      lblZip: document.getElementById("lbl-zip"),
       lblMode: document.getElementById("lbl-mode"),
       lblMin: document.getElementById("lbl-min"),
       modeButtons: [...document.querySelectorAll(".seg button")],
@@ -705,6 +736,15 @@
       for (let i = 1; i < out.length; i++) {
         const obj = {};
         for (let j = 0; j < headers.length; j++) obj[headers[j]] = out[i][j] ?? "";
+        
+        // Extract zip code from address field
+        if (obj.address) {
+          const zipMatch = obj.address.match(/(\d{4})\s*(?:OSLO|Oslo)/);
+          obj.zip_code = zipMatch ? zipMatch[1] : "";
+        } else {
+          obj.zip_code = "";
+        }
+        
         rows.push(obj);
       }
       return rows;
@@ -724,6 +764,7 @@
       ui.lblSearch.textContent = t("search");
       ui.search.placeholder = t("searchPh");
       ui.lblBydel.textContent = t("bydel");
+      ui.lblZip.textContent = t("zip");
       ui.lblMode.textContent = t("mode");
       ui.lblMin.textContent = t("min");
       ui.kMatch.textContent = t("match");
@@ -734,9 +775,13 @@
       ui.modeButtons[1].textContent = t("liten");
       ui.modeButtons[2].textContent = t("stor");
 
-      const prev = ui.bydel.value;
+      const prevBydel = ui.bydel.value;
       ui.bydel.options[0].textContent = t("allBydel");
-      ui.bydel.value = prev;
+      ui.bydel.value = prevBydel;
+
+      const prevZip = ui.zipCode.value;
+      ui.zipCode.options[0].textContent = t("allZip");
+      ui.zipCode.value = prevZip;
     }
 
     function loadBydeler(rows) {
@@ -749,12 +794,24 @@
       }
     }
 
+    function loadZipCodes(rows) {
+      const zipCodes = [...new Set(rows.map(r => r.zip_code).filter(Boolean))].sort((a,b) => a.localeCompare(b));
+      for (const z of zipCodes) {
+        const opt = document.createElement("option");
+        opt.value = z;
+        opt.textContent = z;
+        ui.zipCode.appendChild(opt);
+      }
+    }
+
     function baseRows() {
       const q = ui.search.value.trim().toLowerCase();
       const b = ui.bydel.value;
+      const z = ui.zipCode.value;
 
       return allRows.filter(r => {
         if (b !== "ALL" && r.bydel !== b) return false;
+        if (z !== "ALL" && r.zip_code !== z) return false;
         if (q && !(r.barnehage || "").toLowerCase().includes(q)) return false;
         return true;
       });
@@ -850,6 +907,7 @@
     function bind() {
       ui.search.addEventListener("input", refresh);
       ui.bydel.addEventListener("input", refresh);
+      ui.zipCode.addEventListener("input", refresh);
       ui.minSpots.addEventListener("input", refresh);
       ui.lang.addEventListener("change", () => { setLanguage(); refresh(); });
 
@@ -930,6 +988,7 @@
         throw new Error("No data source available (embedded/json/csv).");
       }
       loadBydeler(allRows);
+      loadZipCodes(allRows);
       refresh();
     }
 
