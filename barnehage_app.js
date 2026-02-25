@@ -475,7 +475,6 @@ async function init() {
   setLanguage();
   bind();
   if (map && window.L) {
-    currentMapBounds = map.getBounds();
     map.on("moveend zoomend", () => {
       currentMapBounds = map.getBounds();
       refresh();
