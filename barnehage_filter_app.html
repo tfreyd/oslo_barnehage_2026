@@ -797,12 +797,27 @@
     function loadZipCodes(rows) {
       const zipCodes = [...new Set(rows.map(r => r.zip_code).filter(Boolean))].sort((a,b) => a.localeCompare(b));
       
+      console.log("loadZipCodes called with", zipCodes.length, "unique zip codes");
+      
+      if (zipCodes.length === 0) {
+        console.error("No zip codes to load!");
+        // Add a placeholder option
+        const opt = document.createElement("option");
+        opt.value = "";
+        opt.textContent = "No zip codes found";
+        opt.disabled = true;
+        ui.zipCode.appendChild(opt);
+        return;
+      }
+      
       for (const z of zipCodes) {
         const opt = document.createElement("option");
         opt.value = z;
         opt.textContent = z;
         ui.zipCode.appendChild(opt);
       }
+      
+      console.log("Successfully loaded", zipCodes.length, "zip code options");
     }
 
     function baseRows() {
@@ -1001,6 +1016,17 @@
         }
         return row;
       });
+      
+      // Debug: Check if we have zip codes
+      const sampleWithZip = allRows.find(r => r.zip_code);
+      if (sampleWithZip) {
+        console.log("Sample row with zip code:", sampleWithZip.barnehage, sampleWithZip.zip_code);
+      } else {
+        console.log("No zip codes found! Sample row:", allRows[0]);
+      }
+      
+      const uniqueZips = [...new Set(allRows.map(r => r.zip_code).filter(Boolean))];
+      console.log("Unique zip codes found:", uniqueZips.length, uniqueZips.slice(0, 5));
       
       loadBydeler(allRows);
       loadZipCodes(allRows);
