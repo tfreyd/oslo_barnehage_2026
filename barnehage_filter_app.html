@@ -795,29 +795,19 @@
     }
 
     function loadZipCodes(rows) {
-      const zipCodes = [...new Set(rows.map(r => r.zip_code).filter(Boolean))].sort((a,b) => a.localeCompare(b));
+      // Get all unique non-empty zip codes and sort them
+      const zipCodes = [...new Set(rows.map(r => r.zip_code).filter(z => z))].sort();
       
-      console.log("loadZipCodes called with", zipCodes.length, "unique zip codes");
+      // Always add the "ALL" option first
+      ui.zipCode.innerHTML = '<option value="ALL"></option>';
       
-      if (zipCodes.length === 0) {
-        console.error("No zip codes to load!");
-        // Add a placeholder option
+      // Add each zip code as an option
+      zipCodes.forEach(zip => {
         const opt = document.createElement("option");
-        opt.value = "";
-        opt.textContent = "No zip codes found";
-        opt.disabled = true;
+        opt.value = zip;
+        opt.textContent = zip;
         ui.zipCode.appendChild(opt);
-        return;
-      }
-      
-      for (const z of zipCodes) {
-        const opt = document.createElement("option");
-        opt.value = z;
-        opt.textContent = z;
-        ui.zipCode.appendChild(opt);
-      }
-      
-      console.log("Successfully loaded", zipCodes.length, "zip code options");
+      });
     }
 
     function baseRows() {
@@ -1004,29 +994,15 @@
         throw new Error("No data source available (embedded/json/csv).");
       }
       
-      // Ensure all rows have zip_code property for both CSV and pre-loaded data
+      // Simple and direct: extract zip codes from all rows
       allRows = allRows.map(row => {
-        if (!row.zip_code && row.address) {
-          // More robust zip code extraction - look for 4 digits followed by optional OSLO/Oslo
-          const zipMatch = row.address.match(/(\d{4})\s*(?:OSLO|Oslo)?/i);
-          // Also try alternative pattern if first one fails (just 4 digits)
-          const zipMatchSimple = row.address.match(/(\d{4})/);
-          const extractedZip = zipMatch ? zipMatch[1] : (zipMatchSimple ? zipMatchSimple[1] : "");
-          return { ...row, zip_code: extractedZip };
+        if (row.address && typeof row.address === 'string') {
+          // Extract first 4 consecutive digits from address
+          const match = row.address.match(/\d{4}/);
+          return { ...row, zip_code: match ? match[0] : "" };
         }
         return row;
       });
-      
-      // Debug: Check if we have zip codes
-      const sampleWithZip = allRows.find(r => r.zip_code);
-      if (sampleWithZip) {
-        console.log("Sample row with zip code:", sampleWithZip.barnehage, sampleWithZip.zip_code);
-      } else {
-        console.log("No zip codes found! Sample row:", allRows[0]);
-      }
-      
-      const uniqueZips = [...new Set(allRows.map(r => r.zip_code).filter(Boolean))];
-      console.log("Unique zip codes found:", uniqueZips.length, uniqueZips.slice(0, 5));
       
       loadBydeler(allRows);
       loadZipCodes(allRows);
