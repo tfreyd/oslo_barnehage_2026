@@ -12,6 +12,15 @@ Interactive local app to explore available kindergarten spots in Oslo for 2026.
 - `data/`: source PDFs and extraction script.
   - `data/extract_barnehage_data.py`
 
+## Features
+
+- Filter by **district** (bydel)
+- Filter by **zip code** (postnummer)
+- Filter by **age group** (small/both/large sections)
+- Filter by **minimum available spots**
+- Interactive map with kindergarten markers
+- Search by name
+
 ## Run locally
 
 Open the app directly:
